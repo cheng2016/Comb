@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/action_bar_container"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/action_bar_height"
+    android:background="@color/white">
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:id="@+id/back_button"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_centerVertical="true"
+        android:visibility="visible">
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="@dimen/widget_size_12"
+            android:layout_marginRight="@dimen/widget_size_8"
+            android:drawablePadding="@dimen/widget_size_12"
+            android:text="@string/app_name"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_size_18"
+            android:textStyle="bold"
+            android:visibility="visible" />
+    </LinearLayout>
+
+
+    <FrameLayout
+        android:id="@+id/right_button"
+        android:layout_width="@dimen/widget_size_120"
+        android:layout_height="match_parent"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:visibility="visible">
+
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/right_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:layout_gravity="center"
+            android:text="Insert Device"
+            android:textColor="@color/black"
+            android:textSize="@dimen/font_size_16"
+            android:visibility="visible" />
+
+
+    </FrameLayout>
+
+
+    <View
+        android:id="@+id/line"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/widget_min_size_2"
+        android:layout_alignParentBottom="true"
+        android:background="@color/lightsteelblue" />
+</RelativeLayout>
