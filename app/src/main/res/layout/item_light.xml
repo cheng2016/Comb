@@ -23,7 +23,7 @@
             android:textStyle="bold" />
 
         <ImageView
-            android:id="@+id/top_img"
+            android:id="@+id/ir_img"
             android:layout_width="56dp"
             android:layout_height="56dp"
             android:layout_alignParentStart="true"
@@ -32,74 +32,73 @@
             android:layout_marginLeft="60dp"
             android:layout_marginTop="10dp"
             android:adjustViewBounds="true"
-            app:srcCompat="@mipmap/btn_red" />
-
-        <ImageView
-            android:id="@+id/bottom_img"
-            android:layout_width="56dp"
-            android:layout_height="56dp"
-            android:layout_below="@+id/top_img"
-            android:layout_alignLeft="@+id/top_img"
-            android:layout_marginTop="8dp"
-            android:layout_marginBottom="10dp"
             app:srcCompat="@mipmap/btn_ir1" />
 
-        <EditText
-            android:id="@+id/mw_top_editText"
+        <ImageView
+            android:id="@+id/red_img"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            android:layout_below="@+id/ir_img"
+            android:layout_alignLeft="@+id/ir_img"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="10dp"
+            app:srcCompat="@mipmap/btn_red" />
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/ir_mw_editText"
+            android:focusable="false"
             android:layout_width="80dp"
             android:layout_height="36dp"
             android:layout_alignParentTop="true"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="18dp"
-            android:layout_toEndOf="@+id/top_img"
-            android:layout_toRightOf="@+id/top_img"
+            android:layout_toEndOf="@+id/ir_img"
+            android:layout_toRightOf="@+id/ir_img"
             android:background="@drawable/shape_edit"
             android:gravity="center"
-            android:inputType="number"
             android:text="10"
             android:textColor="@android:color/holo_red_dark" />
 
-        <EditText
-            android:id="@+id/time_top_editText"
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/ir_time_editText"
             android:layout_width="80dp"
             android:layout_height="36dp"
+            android:focusable="false"
             android:layout_alignParentTop="true"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="18dp"
-            android:layout_toEndOf="@+id/mw_top_editText"
-            android:layout_toRightOf="@+id/mw_top_editText"
+            android:layout_toEndOf="@+id/ir_mw_editText"
+            android:layout_toRightOf="@+id/ir_mw_editText"
             android:background="@drawable/shape_edit"
             android:gravity="center"
-            android:inputType="number"
             android:text="10"
             android:textColor="@android:color/holo_red_dark" />
 
-        <EditText
-            android:id="@+id/mw_bottom_editText"
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/red_mw_editText"
             android:layout_width="80dp"
             android:layout_height="36dp"
-            android:layout_below="@+id/mw_top_editText"
-            android:layout_alignStart="@+id/mw_top_editText"
-            android:layout_alignLeft="@+id/mw_top_editText"
+            android:layout_below="@+id/ir_mw_editText"
+            android:layout_alignStart="@+id/ir_mw_editText"
+            android:layout_alignLeft="@+id/ir_mw_editText"
             android:layout_marginTop="28dp"
             android:background="@drawable/shape_edit"
             android:gravity="center"
-            android:inputType="number"
             android:text="10"
             android:textColor="@android:color/holo_red_dark" />
 
-        <EditText
-            android:id="@+id/time_bottom_editText"
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/red_time_editText"
             android:layout_width="80dp"
             android:layout_height="36dp"
-            android:layout_below="@+id/time_top_editText"
+
+            android:layout_below="@+id/ir_mw_editText"
             android:layout_marginLeft="10dp"
             android:layout_marginTop="28dp"
-            android:layout_toEndOf="@+id/mw_bottom_editText"
-            android:layout_toRightOf="@+id/mw_bottom_editText"
+            android:layout_toEndOf="@+id/red_mw_editText"
+            android:layout_toRightOf="@+id/red_mw_editText"
             android:background="@drawable/shape_edit"
             android:gravity="center"
-            android:inputType="number"
             android:text="10"
             android:textColor="@android:color/holo_red_dark" />
 
@@ -109,7 +108,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:layout_marginRight="20dp"
+            android:layout_marginRight="16dp"
             app:srcCompat="@mipmap/btn_delete" />
     </RelativeLayout>
 

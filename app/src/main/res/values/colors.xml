@@ -188,4 +188,6 @@
     <color name="clock_text">#D0D9EE</color>
 
     <color name="lighter_gray">#cccccc</color>
+
+    <color name="holo_red_dark">#ffcc0000</color>
 </resources>

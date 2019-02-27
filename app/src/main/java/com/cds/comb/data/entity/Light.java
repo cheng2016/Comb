@@ -6,31 +6,53 @@ package com.cds.comb.data.entity;
  * @Version: 3.0.0
  */
 public class Light {
-    private String mw;
+    private String ir;
 
-    private String time;
+    private String irTime;
+
+    private String red;
+
+    private String redTime;
 
     public Light() {
     }
 
-    public Light(String mw, String time) {
-        this.mw = mw;
-        this.time = time;
+    public Light(String ir, String irTime, String red, String redTime) {
+        this.ir = ir;
+        this.irTime = irTime;
+        this.red = red;
+        this.redTime = redTime;
     }
 
-    public String getMw() {
-        return mw;
+    public String getIr() {
+        return ir;
     }
 
-    public void setMw(String mw) {
-        this.mw = mw;
+    public void setIr(String ir) {
+        this.ir = ir;
     }
 
-    public String getTime() {
-        return time;
+    public String getIrTime() {
+        return irTime;
     }
 
-    public void setTime(String time) {
-        this.time = time;
+    public void setIrTime(String irTime) {
+        this.irTime = irTime;
+    }
+
+    public String getRed() {
+        return red;
+    }
+
+    public void setRed(String red) {
+        this.red = red;
+    }
+
+    public String getRedTime() {
+        return redTime;
+    }
+
+    public void setRedTime(String redTime) {
+        this.redTime = redTime;
     }
 }

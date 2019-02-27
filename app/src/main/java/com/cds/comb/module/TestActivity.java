@@ -486,12 +486,6 @@ public class TestActivity extends BaseActivity implements View.OnClickListener {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        BleManager.getInstance().cancelScan();
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
         BleManager.getInstance().disconnectAllDevice();

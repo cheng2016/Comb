@@ -1,11 +1,11 @@
 package com.cds.comb.module;
 
 import android.content.Context;
+import android.support.v7.widget.AppCompatTextView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -81,7 +81,7 @@ public class LightAdapter extends BaseAdapter {
             holder.addImg.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Light light = new Light("10","30");
+                    Light light = new Light("10", "30", "10", "30");
                     mDataList.add(light);
                     setDataList(mDataList);
                 }
@@ -90,7 +90,32 @@ public class LightAdapter extends BaseAdapter {
         }
         holder.addImg.setVisibility(View.GONE);
         holder.contentLayout.setVisibility(View.VISIBLE);
+        holder.contentLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listener != null) {
+                    listener.onItemClick(v, position, mDataList.get(position));
+                }
+            }
+        });
         holder.indexTv.setText((position + 1) + "");
+        Light bean = mDataList.get(position);
+        holder.irMwEditText.setText(bean.getIr());
+        holder.irTimeEditText.setText(bean.getIrTime());
+        if(bean.getIr().equals("0")){
+            holder.irImg.setImageResource(R.mipmap.btn_ir2);
+            holder.irMwEditText.setTextColor(context.getResources().getColor(R.color.gray));
+            holder.irTimeEditText.setTextColor(context.getResources().getColor(R.color.gray));
+        }else {
+            holder.irImg.setImageResource(R.mipmap.btn_ir1);
+            holder.irMwEditText.setTextColor(context.getResources().getColor(R.color.holo_red_dark));
+            holder.irTimeEditText.setTextColor(context.getResources().getColor(R.color.holo_red_dark));
+        }
+
+
+        holder.redMwEditText.setText(bean.getRed());
+        holder.redTimeEditText.setText(bean.getRedTime());
+
         holder.deleteImg.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -101,25 +126,37 @@ public class LightAdapter extends BaseAdapter {
         return convertView;
     }
 
-    static class ViewHolder {
-        @Bind(R.id.content)
-        RelativeLayout contentLayout;
+
+    OnContentClickListener listener;
+
+    public void setListener(OnContentClickListener listener) {
+        this.listener = listener;
+    }
+
+    public interface OnContentClickListener {
+        void onItemClick(View view, int index, Light light);
+    }
+
+    static
+    class ViewHolder {
         @Bind(R.id.index)
         TextView indexTv;
-        @Bind(R.id.top_img)
-        ImageView topImg;
-        @Bind(R.id.bottom_img)
-        ImageView bottomImg;
-        @Bind(R.id.mw_top_editText)
-        EditText mwTopEditText;
-        @Bind(R.id.time_top_editText)
-        EditText timeTopEditText;
-        @Bind(R.id.mw_bottom_editText)
-        EditText mwBottomEditText;
-        @Bind(R.id.time_bottom_editText)
-        EditText timeBottomEditText;
+        @Bind(R.id.ir_img)
+        ImageView irImg;
+        @Bind(R.id.red_img)
+        ImageView redImg;
+        @Bind(R.id.ir_mw_editText)
+        AppCompatTextView irMwEditText;
+        @Bind(R.id.ir_time_editText)
+        AppCompatTextView irTimeEditText;
+        @Bind(R.id.red_mw_editText)
+        AppCompatTextView redMwEditText;
+        @Bind(R.id.red_time_editText)
+        AppCompatTextView redTimeEditText;
         @Bind(R.id.delete)
         ImageView deleteImg;
+        @Bind(R.id.content)
+        RelativeLayout contentLayout;
         @Bind(R.id.add)
         ImageView addImg;
 

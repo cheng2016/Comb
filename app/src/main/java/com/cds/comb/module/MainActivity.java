@@ -17,6 +17,7 @@ import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -30,7 +31,9 @@ import com.cds.comb.R;
 import com.cds.comb.data.entity.Light;
 import com.cds.comb.util.Logger;
 import com.cds.comb.util.PermissionHelper;
+import com.cds.comb.view.ActionDialog;
 import com.cds.comb.view.HorizontalListView;
+import com.cds.comb.view.ModifyDialog;
 import com.clj.fastble.BleManager;
 import com.clj.fastble.callback.BleGattCallback;
 import com.clj.fastble.callback.BleNotifyCallback;
@@ -45,7 +48,7 @@ import java.security.Permission;
 import java.util.List;
 
 
-public class MainActivity extends BaseActivity implements View.OnClickListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener, LightAdapter.OnContentClickListener, ActionDialog.onActionClickListener {
     public static final String BLE_BROADCAST = "PetComb";
 
     ListView listView;
@@ -98,12 +101,15 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         uploadBtn = findViewById(R.id.upload_btn);
         uploadBtn.setOnClickListener(this);
         tempTv = findViewById(R.id.temp_tv);
+
+
     }
 
     @Override
     protected void initData() {
         lightAdapter = new LightAdapter(this);
         listView.setAdapter(lightAdapter);
+        lightAdapter.setListener(this);
         indicatorAdapter = new IndicatorAdapter(this);
         hlvSimpleListView.setAdapter(indicatorAdapter);
         BleManager.getInstance().init(getApplication());
@@ -269,7 +275,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     void xiafaAction(int model) {
         byte bytes[];
         if (lightAdapter.getDataList() != null && lightAdapter.getDataList().size() > 0) {
-            bytes = new byte[6 + lightAdapter.getDataList().size() * 3 + 1];
+            bytes = new byte[6 + lightAdapter.getDataList().size() * 6 + 1];
             bytes[0] = 0X0F;
             bytes[1] = 0X65;
             bytes[2] = 0X01;
@@ -278,9 +284,13 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             bytes[5] = (byte) (checkBox.isChecked() ? Integer.valueOf(repeatEdit.getText().toString().trim()).intValue() : 1);
             for (int i = 0; i < lightAdapter.getDataList().size(); i++) {
                 Light bean = lightAdapter.getDataList().get(i);
-                bytes[6 + i * 3] = (byte) Integer.valueOf(bean.getMw()).intValue();
-                bytes[7 + i * 3] = (byte) (Integer.valueOf(bean.getTime()).intValue() >> 8);
-                bytes[8 + i * 3] = (byte) Integer.valueOf(bean.getTime()).intValue();
+                bytes[0 + i * 6] = (byte) Integer.valueOf(bean.getIr()).intValue();
+                bytes[1 + i * 6] = (byte) (Integer.valueOf(bean.getIrTime()).intValue() >> 8);
+                bytes[2 + i * 6] = (byte) Integer.valueOf(bean.getIrTime()).intValue();
+
+                bytes[3 + i * 6] = (byte) Integer.valueOf(bean.getRed()).intValue();
+                bytes[4 + i * 6] = (byte) (Integer.valueOf(bean.getRedTime()).intValue() >> 8);
+                bytes[5 + i * 6] = (byte) Integer.valueOf(bean.getRedTime()).intValue();
             }
             bytes[bytes.length - 1] = checkSum(bytes);
             bytes[1] = (byte) (bytes.length - 2);
@@ -358,7 +368,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                             }
                         });
             }
-        }, 300);
+        }, 200);
     }
 
 
@@ -399,12 +409,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
     }
 
     @Override
-    protected void onStop() {
-        super.onStop();
-        BleManager.getInstance().cancelScan();
-    }
-
-    @Override
     protected void onDestroy() {
         super.onDestroy();
         BleManager.getInstance().disconnectAllDevice();
@@ -419,12 +423,32 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 break;
             case R.id.upload_btn:
                 if (isConnect) {
-                    xiafaAction(1);
+                    new ActionDialog(MainActivity.this).setListener(this).show();
                 } else {
                     startScan();
 //                    Toast.makeText(this, "Please connect the device first", Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
+    }
+
+    @Override
+    public void onItemClick(View view, final int index, Light light) {
+        if (lightAdapter.getDataList().size() > 0) {
+            Light bean = lightAdapter.getDataList().get(index);
+            new ModifyDialog(MainActivity.this).builder().setData(light).setPositiveButton(new ModifyDialog.OnModifyClickListener() {
+                @Override
+                public void onClick(View var1, Light data) {
+                    List<Light> dataList = lightAdapter.getDataList();
+                    dataList.set(index,data);
+                    lightAdapter.setDataList(dataList);
+                }
+            }).show();
+        }
+    }
+
+    @Override
+    public void onActionClick(int index) {
+        xiafaAction(index);
     }
 }
