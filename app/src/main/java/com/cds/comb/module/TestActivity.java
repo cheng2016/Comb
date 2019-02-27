@@ -239,8 +239,6 @@ public class TestActivity extends BaseActivity implements View.OnClickListener {
         }
         sendStr[102] = checkSum(sendStr);
         sendStr[1] = (byte) (sendStr.length - 2);
-//        writeData(sendStr);
-
         Logger.i(TAG, "sendStr：" + byteArrayToHexStr(sendStr));
 
         byte[] arrayOfByte;

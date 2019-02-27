@@ -22,6 +22,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cds.comb.BaseActivity;
@@ -70,6 +71,8 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
     EditText repeatEdit;
 
+    TextView tempTv;
+
     CheckBox checkBox;
 
     Button uploadBtn;
@@ -84,6 +87,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         hlvSimpleListView = (HorizontalListView) findViewById(R.id.hlvSimpleList);
         listView = (ListView) findViewById(R.id.list_view);
 
+        progressDialog = new ProgressDialog(this);
         img_loading = findViewById(R.id.img_loading);
         operatingAnim = AnimationUtils.loadAnimation(this, R.anim.rotate);
         operatingAnim.setInterpolator(new LinearInterpolator());
@@ -93,6 +97,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
         checkBox = findViewById(R.id.checkBox);
         uploadBtn = findViewById(R.id.upload_btn);
         uploadBtn.setOnClickListener(this);
+        tempTv = findViewById(R.id.temp_tv);
     }
 
     @Override
@@ -199,7 +204,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                 isConnect = true;
                 progressDialog.dismiss();
                 Toast.makeText(MainActivity.this, getString(R.string.connect_success), Toast.LENGTH_LONG).show();
-//                statusTv.setText("ble onConnectSuccess");
+                tempTv.setText("ble onConnectSuccess");
                 mBleDevice = bleDevice;
                 mBluetoothGatt = gatt;
                 mGattService = mBluetoothGatt.getServices().get(mBluetoothGatt.getServices().size() - 1);
@@ -213,7 +218,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             public void onDisConnected(boolean isActiveDisConnected, BleDevice bleDevice, BluetoothGatt gatt, int status) {
                 isConnect = false;
                 progressDialog.dismiss();
-//                statusTv.setText("ble onDisConnected");
+                tempTv.setText("ble onDisConnected");
                 if (isActiveDisConnected) {
                     Toast.makeText(MainActivity.this, getString(R.string.active_disconnected), Toast.LENGTH_LONG).show();
                 } else {
@@ -234,6 +239,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 
                     @Override
                     public void onNotifySuccess() {
+                        tempTv.setText("onNotifySuccess");
                         Logger.i(TAG, "onNotifySuccess");
                     }
 
@@ -255,6 +261,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                                 lastData = lastData + " " + HexUtil.formatHexString(notifyCharacteristic.getValue(), true);
                             }
                         }
+                        tempTv.setText(lastData);
                     }
                 });
     }
@@ -269,7 +276,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
             bytes[3] = 0X00;
             bytes[4] = (byte) model;
             bytes[5] = (byte) (checkBox.isChecked() ? Integer.valueOf(repeatEdit.getText().toString().trim()).intValue() : 1);
-            for (int i = 0; i <= lightAdapter.getDataList().size(); i++) {
+            for (int i = 0; i < lightAdapter.getDataList().size(); i++) {
                 Light bean = lightAdapter.getDataList().get(i);
                 bytes[6 + i * 3] = (byte) Integer.valueOf(bean.getMw()).intValue();
                 bytes[7 + i * 3] = (byte) (Integer.valueOf(bean.getTime()).intValue() >> 8);
@@ -331,9 +338,9 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
 //                                            addText(txt, "write success, current: " + current
 //                                                    + " total: " + total
 //                                                    + " justWrite: " + HexUtil.formatHexString(justWrite, true));
-//                                        statusTv.setText("write success, current: " + current
-//                                                + " total: " + total
-//                                                + " justWrite: " + HexUtil.formatHexString(justWrite, true));
+                                        tempTv.setText("write success, current: " + current
+                                                + " total: " + total
+                                                + " justWrite: " + HexUtil.formatHexString(justWrite, true));
                                     }
                                 });
                             }
@@ -345,7 +352,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener {
                                     @Override
                                     public void run() {
 //                                            addText(txt, exception.toString());
-//                                        statusTv.setText(exception.toString());
+                                        tempTv.setText(exception.toString());
                                     }
                                 });
                             }
