@@ -12,17 +12,19 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.view.animation.LinearInterpolator;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,7 +34,6 @@ import com.cds.comb.data.entity.Light;
 import com.cds.comb.util.Logger;
 import com.cds.comb.util.PermissionHelper;
 import com.cds.comb.view.ActionDialog;
-import com.cds.comb.view.HorizontalListView;
 import com.cds.comb.view.ModifyDialog;
 import com.clj.fastble.BleManager;
 import com.clj.fastble.callback.BleGattCallback;
@@ -44,20 +45,24 @@ import com.clj.fastble.exception.BleException;
 import com.clj.fastble.scan.BleScanRuleConfig;
 import com.clj.fastble.utils.HexUtil;
 
-import java.security.Permission;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import java.util.List;
 
 
-public class MainActivity extends BaseActivity implements View.OnClickListener, LightAdapter.OnContentClickListener, ActionDialog.onActionClickListener {
+public class MainActivity extends BaseActivity implements View.OnClickListener, ActionDialog.onActionClickListener, LightShowAdapter.OnContentClickListener {
     public static final String BLE_BROADCAST = "PetComb";
 
-    ListView listView;
+    RecyclerView mRecyclerView;
 
-    LightAdapter lightAdapter;
+    LightShowAdapter lightShowAdapter;
 
-    HorizontalListView hlvSimpleListView;
+    HorizontalViewAdapter mHorizontalViewAdapter;
 
-    IndicatorAdapter indicatorAdapter;
+    RecyclerView mHorizontalView;
+
 
     private ImageView img_loading;
     private Animation operatingAnim;
@@ -74,7 +79,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     EditText repeatEdit;
 
-    TextView tempTv;
+    TextView tempTv, totalTimeTv, sumTimeTv;
 
     CheckBox checkBox;
 
@@ -87,8 +92,6 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     @Override
     protected void initView(Bundle savedInstanceState) {
-        hlvSimpleListView = (HorizontalListView) findViewById(R.id.hlvSimpleList);
-        listView = (ListView) findViewById(R.id.list_view);
 
         progressDialog = new ProgressDialog(this);
         img_loading = findViewById(R.id.img_loading);
@@ -102,16 +105,50 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         uploadBtn.setOnClickListener(this);
         tempTv = findViewById(R.id.temp_tv);
 
+        mRecyclerView = findViewById(R.id.recyclerView);
 
+        mRecyclerView.setHasFixedSize(true);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(layoutManager);
+
+        lightShowAdapter = new LightShowAdapter(this, 16);
+        lightShowAdapter.setListener(this);
+        mRecyclerView.setAdapter(lightShowAdapter);//设置adapter
+
+        mHorizontalView = findViewById(R.id.horizontalView);
+        mHorizontalView.setHasFixedSize(true);
+        LinearLayoutManager ms = new LinearLayoutManager(this);
+        ms.setOrientation(LinearLayoutManager.HORIZONTAL);
+        mHorizontalView.setLayoutManager(ms);
+
+        mHorizontalViewAdapter = new HorizontalViewAdapter(this);
+        mHorizontalView.setAdapter(mHorizontalViewAdapter);
+
+        totalTimeTv = findViewById(R.id.total_time);
+        sumTimeTv = findViewById(R.id.sum_time);
+
+        repeatEdit.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                calculatSumTime();
+            }
+        });
     }
 
     @Override
     protected void initData() {
-        lightAdapter = new LightAdapter(this);
-        listView.setAdapter(lightAdapter);
-        lightAdapter.setListener(this);
-        indicatorAdapter = new IndicatorAdapter(this);
-        hlvSimpleListView.setAdapter(indicatorAdapter);
+//        indicatorAdapter = new IndicatorAdapter(this);
+//        hlvSimpleListView.setAdapter(indicatorAdapter);
         BleManager.getInstance().init(getApplication());
         BleManager.getInstance()
                 .enableLog(true)
@@ -274,16 +311,16 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
 
     void xiafaAction(int model) {
         byte bytes[];
-        if (lightAdapter.getDataList() != null && lightAdapter.getDataList().size() > 0) {
-            bytes = new byte[6 + lightAdapter.getDataList().size() * 6 + 1];
+        if (lightShowAdapter.getDataList() != null && lightShowAdapter.getDataList().size() > 0) {
+            bytes = new byte[6 + lightShowAdapter.getDataList().size() * 6 + 1];
             bytes[0] = 0X0F;
             bytes[1] = 0X65;
             bytes[2] = 0X01;
             bytes[3] = 0X00;
             bytes[4] = (byte) model;
             bytes[5] = (byte) (checkBox.isChecked() ? Integer.valueOf(repeatEdit.getText().toString().trim()).intValue() : 1);
-            for (int i = 0; i < lightAdapter.getDataList().size(); i++) {
-                Light bean = lightAdapter.getDataList().get(i);
+            for (int i = 0; i < lightShowAdapter.getDataList().size(); i++) {
+                Light bean = lightShowAdapter.getDataList().get(i);
                 bytes[0 + i * 6] = (byte) Integer.valueOf(bean.getIr()).intValue();
                 bytes[1 + i * 6] = (byte) (Integer.valueOf(bean.getIrTime()).intValue() >> 8);
                 bytes[2 + i * 6] = (byte) Integer.valueOf(bean.getIrTime()).intValue();
@@ -432,23 +469,70 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
         }
     }
 
+
     @Override
-    public void onItemClick(View view, final int index, Light light) {
-        if (lightAdapter.getDataList().size() > 0) {
-            Light bean = lightAdapter.getDataList().get(index);
+    public void onActionClick(int index) {
+        xiafaAction(index);
+    }
+
+    @Override
+    public void onContentClick(View view, final int index, Light light) {
+        if (lightShowAdapter.getDataList().size() > 0) {
+            Light bean = lightShowAdapter.getDataList().get(index);
             new ModifyDialog(MainActivity.this).builder().setData(light).setPositiveButton(new ModifyDialog.OnModifyClickListener() {
                 @Override
                 public void onClick(View var1, Light data) {
-                    List<Light> dataList = lightAdapter.getDataList();
-                    dataList.set(index,data);
-                    lightAdapter.setDataList(dataList);
+                    List<Light> dataList = lightShowAdapter.getDataList();
+                    dataList.set(index, data);
+                    lightShowAdapter.setDataList(dataList);
                 }
             }).show();
         }
     }
 
     @Override
-    public void onActionClick(int index) {
-        xiafaAction(index);
+    public void onDataChange() {
+        mHorizontalViewAdapter.setDataList(lightShowAdapter.getDataList());
+        mRecyclerView.scrollToPosition(lightShowAdapter.getItemCount() - 2);
+        calculatTotalTime();
+
+        calculatSumTime();
+    }
+
+    DateTimeFormatter format = DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss");
+
+    DateTimeFormatter format1 = DateTimeFormat.forPattern("mm : ss");
+
+    int calculatTotalTime() {
+        int sum = 0;
+        if (lightShowAdapter.getDataList() == null || lightShowAdapter.getDataList().size() == 0) {
+            return sum;
+        }
+        for (Light light : lightShowAdapter.getDataList()) {
+            sum += Integer.valueOf(light.getIr()) == 0 ?
+                    (Integer.valueOf(light.getRed()) == 0 ? 0 : Integer.valueOf(light.getRedTime())) :
+                    (Integer.valueOf(light.getRed()) == 0 ? Integer.valueOf(light.getIrTime()) :
+                            Integer.valueOf(light.getIrTime()) > Integer.valueOf(light.getRedTime())
+                                    ? Integer.valueOf(light.getIrTime()) : Integer.valueOf(light.getRedTime()));
+        }
+        DateTime dateTime = DateTime.parse("2012-12-12 12:00:00", format);
+        dateTime = dateTime.plusMinutes(sum / 60)
+                .plusSeconds(sum % 60);
+        totalTimeTv.setText("Total time：" + dateTime.toString(format1));
+        return sum;
+    }
+
+    void calculatSumTime() {
+        int sum = calculatTotalTime();
+        int repeat = TextUtils.isEmpty(repeatEdit.getText().toString()) ?
+                1 : checkBox.isChecked() ?
+                Integer.valueOf(repeatEdit.getText().toString().trim()) == 0 ? 1 : Integer.valueOf(repeatEdit.getText().toString()) : 1;
+        int max = sum * repeat;
+        DateTime dateTime = DateTime.parse("2012-12-12 12:00:00", format);
+
+        dateTime = dateTime.plusMinutes(max / 60 > 60 ? 60 : max / 60)
+                .plusSeconds(max % 60);
+        sumTimeTv.setText(dateTime.toString(format1));
+
     }
 }

@@ -40,6 +40,7 @@
                 android:textSize="20sp" />
 
             <TextView
+                android:id="@+id/total_time"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
                 android:layout_gravity="center_horizontal"
@@ -47,7 +48,7 @@
                 android:background="@android:color/white"
                 android:gravity="center"
                 android:padding="5dp"
-                android:text="Total time：05 : 00"
+                android:text="Total time：00 : 00"
                 android:textSize="16sp"
                 android:textStyle="bold" />
         </LinearLayout>
@@ -81,31 +82,48 @@
         android:id="@+id/list_view"
         android:layout_width="match_parent"
         android:layout_height="270dp"
-        android:background="@android:color/white" />
+        android:background="@android:color/white"
+        android:visibility="gone" />
 
-    <FrameLayout
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerView"
         android:layout_width="match_parent"
-        android:layout_height="80dp"
-        android:layout_marginTop="8dp">
+        android:layout_height="270dp"
+        android:background="@android:color/white"
+        android:scrollbars="vertical">
 
-        <com.cds.comb.view.HorizontalListView
-            android:id="@+id/hlvSimpleList"
-            android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:layout_marginLeft="26dp"
-            android:layout_marginTop="16dp"
-            android:layout_marginRight="26dp" />
+    </android.support.v7.widget.RecyclerView>
 
-        <ImageView
-            android:id="@+id/imageView"
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/lighter_gray"
+        android:paddingLeft="@dimen/widget_size_10"
+        android:paddingRight="@dimen/widget_size_10">
+
+        <View
+            android:layout_width="3dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="@dimen/widget_size_20"
+            android:background="@color/black" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/horizontalView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="18dp"
-            android:layout_marginTop="30dp"
-            android:layout_marginRight="18dp"
-            android:adjustViewBounds="true"
-            app:srcCompat="@mipmap/bottom_line" />
-    </FrameLayout>
+            android:layout_height="60dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginRight="@dimen/widget_size_3"
+            android:layout_marginLeft="@dimen/widget_size_3"
+            android:scrollbars="vertical">
+        </android.support.v7.widget.RecyclerView>
+
+        <View
+            android:layout_width="3dp"
+            android:layout_height="30dp"
+            android:layout_marginTop="@dimen/widget_size_20"
+            android:layout_alignParentRight="true"
+            android:background="@color/black" />
+    </RelativeLayout>
 
     <View
         android:layout_width="match_parent"
@@ -156,7 +174,9 @@
             android:background="@drawable/shape_edit"
             android:gravity="center"
             android:paddingLeft="3dp"
+            android:inputType="number"
             android:text="5"
+            android:maxLength="1"
             android:textColor="@android:color/holo_red_dark"
             android:textSize="18sp" />
     </RelativeLayout>
@@ -186,13 +206,14 @@
             android:textSize="22sp"
             android:textStyle="bold" />
 
-        <EditText
+        <TextView
+            android:id="@+id/sum_time"
             android:layout_width="66dp"
             android:layout_height="36dp"
-            android:layout_gravity="center_vertical"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/widget_size_8"
             android:background="@drawable/shape_edit"
-            android:paddingLeft="3dp"
-            android:text="25:00"
+            android:text="00:00"
             android:textColor="@android:color/black"
             android:textSize="18sp" />
 
