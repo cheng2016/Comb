@@ -506,6 +506,7 @@ public class MainActivity extends BaseActivity implements View.OnClickListener, 
     int calculatTotalTime() {
         int sum = 0;
         if (lightShowAdapter.getDataList() == null || lightShowAdapter.getDataList().size() == 0) {
+            totalTimeTv.setText("Total time：00 : 00");
             return sum;
         }
         for (Light light : lightShowAdapter.getDataList()) {
